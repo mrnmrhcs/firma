@@ -4,7 +4,7 @@ Function TransferHandler {
     param (
         [Parameter(Mandatory)] [PSObject]$Session,
         [Parameter(Mandatory)] [PSObject]$Options,
-        [Parameter(Mandatory)] [ValidateSet('Env','Config','Public','Site','Kirby','Vendor','CloneContent','CloneStorage')] [String]$Switch
+        [Parameter(Mandatory)] [ValidateSet('Env', 'Config', 'Public', 'Site', 'Kirby', 'Vendor', 'CloneContent', 'CloneStorage')] [String]$Switch
     )
 
     if ($Switch -eq 'Env') {
@@ -126,8 +126,8 @@ Function ActionHandler {
 
     param (
         [Parameter(Mandatory)] [PSObject]$Session,
-        [Parameter(Mandatory)] [ValidateSet('Env','Config','Public','Site','Kirby','Vendor','Clone')] [String]$Switch,
-        [Parameter()] [ValidateSet('Unlink','Link','Cleanup')] [String]$State
+        [Parameter(Mandatory)] [ValidateSet('Env', 'Config', 'Public', 'Site', 'Kirby', 'Vendor', 'Clone')] [String]$Switch,
+        [Parameter()] [ValidateSet('Unlink', 'Link', 'Cleanup')] [String]$State
     )
 
     if ($Switch -eq 'Env') {
@@ -177,11 +177,12 @@ Function ActionHandler {
 
             while ($Done -eq $Null) {
 
-                $Removal = $Session.RemoveFiles('/.env__del')
+                # $Removal = $Session.RemoveFiles('/.env__del')
+                $Removal = $Session.RemoveFiles('*.*__del')
 
                 if ($Removal.IsSuccess) {
 
-                    Write-Host "$(Get-Date -Format 'HH:mm:ss') Success... /.env__del => delete"
+                    Write-Host "$(Get-Date -Format 'HH:mm:ss') Success... /*.*__del => delete"
 
                     $Done = $True
                 }
