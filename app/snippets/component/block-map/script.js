@@ -1,4 +1,5 @@
-let geo
+const map = []
+const geo = []
 
 class BlockMap extends window.HTMLElement {
   constructor () {
@@ -7,15 +8,15 @@ class BlockMap extends window.HTMLElement {
   }
 
   connectedCallback () {
-    geo = JSON.parse(this.$.children('.jsData').eq(0).html())
+    geo[0] = JSON.parse(this.$.children('.jsData').eq(0).html())
   }
 }
 
 window.customElements.define('block-map', BlockMap)
 
 function initMap () {
-  const map = new google.maps.Map(document.getElementById('map'), {
-    center: { lat: parseFloat(geo['0'].lat), lng: parseFloat(geo['0'].lon) },
+  map[0] = new google.maps.Map(document.getElementById('map'), {
+    center: { lat: parseFloat(geo[0].lat), lng: parseFloat(geo[0].lon) },
     zoom: 14,
     disableDefaultUI: true,
     styles: [
@@ -185,19 +186,19 @@ function initMap () {
     fields: ['name', 'formatted_address', 'geometry']
   }
 
-  const service = new google.maps.places.PlacesService(map)
+  const service = new google.maps.places.PlacesService(map[0])
   const infowindow = new google.maps.InfoWindow()
 
   service.getDetails(request, function (place, status) {
     if (status === google.maps.places.PlacesServiceStatus.OK) {
       marker = new google.maps.Marker({
-        map: map,
+        map: map[0],
         position: place.geometry.location
       })
       google.maps.event.addListener(marker, 'click', function () {
         infowindow.setContent('<div class="infoWindow"><a class="infoWindow-link" href="https://g.page/schramm-reinigung?gm" target="blank"><strong>' + place.name + '</strong></a><br>' +
         place.formatted_address + '</div>')
-        infowindow.open(map, this)
+        infowindow.open(map[0], this)
       })
     }
   })

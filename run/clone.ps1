@@ -27,6 +27,7 @@ try {
 
     # OPTIONS
     $Options = New-Object WinSCP.TransferOptions
+    $Options.TransferMode = [WinSCP.TransferMode]::Automatic
 
     Function SessionConnect {
         [CmdletBinding()]
@@ -38,13 +39,18 @@ try {
             HostName = $Config.SESSION_HOST
             UserName = $usr
             Password = [System.Net.NetworkCredential]::new('', $pw).Password
-            TimeoutInMilliseconds = '60000'
+            TimeoutInMilliseconds = '3200'
         }
 
         $Settings.AddRawSettings("AddressFamily", "1")
-        $Settings.AddRawSettings("FollowDirectorySymlinks", "1")
-        $Settings.AddRawSettings("Utf", "1")
+        $Settings.AddRawSettings("FtpUseMlsd", "0")
         $Settings.AddRawSettings("MinTlsVersion", "12")
+        $Settings.AddRawSettings("MaxTlsVersion", "12")
+        $Settings.AddRawSettings("Utf", "2")
+
+        $Settings.AddRawSettings("Logging\LogProtocol", "-1")
+        $Settings.AddRawSettings("Logging\LogFileAppend", "0")
+        $Settings.AddRawSettings("Logging\LogMaxCount", "1")
 
         $WinSCP = New-Object WinSCP.Session
         $WinSCP.ExecutablePath = $winSCPexec
@@ -52,7 +58,7 @@ try {
         # LOG
         $WinSCP.SessionLogPath = $Env:Onedrive + '\_mmrhcs\_logs\_winscp\m1.winscp.' + $Env:APP_NAME + '.clone.log'
         $WinSCP.DebugLogPath = $Env:Onedrive + '\_mmrhcs\_logs\_winscp\m1.winscp.' + $Env:APP_NAME + '.clone.debug.log'
-        $WinSCP.DebugLogLevel = '0'
+        $WinSCP.DebugLogLevel = '-1'
         $WinSCP.add_FileTransferred({LogTransferredFiles($_)})
 
         # CONNECT
