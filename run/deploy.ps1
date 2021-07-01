@@ -31,7 +31,7 @@ try {
     $Options = New-Object WinSCP.TransferOptions
     $Options.TransferMode = [WinSCP.TransferMode]::Automatic
 
-    Function SessionConnect {
+    function SessionConnect {
         [CmdletBinding()]
 
         # SESSION
@@ -53,8 +53,6 @@ try {
         $Settings.AddRawSettings("Logging\LogProtocol", "-1")
         $Settings.AddRawSettings("Logging\LogFileAppend", "0")
         $Settings.AddRawSettings("Logging\LogMaxCount", "1")
-
-        # $Settings.AddRawSettings("FtpForcePasvIp2", "2")
 
         $WinSCP = New-Object WinSCP.Session
         $WinSCP.ExecutablePath = $winSCPexec

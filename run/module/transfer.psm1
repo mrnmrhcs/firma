@@ -44,7 +44,7 @@ Function TransferHandler {
         Write-Host "# $((Get-Culture).TextInfo.ToUpper($Switch)) # TRANSFER"
         Write-Host
 
-        $FileMasks = '.*', '*.php', '*.js', '*.css', '*.txt', '*.map'
+        $FileMasks = 'assets', '.*', '*.php', '*.js', '*.css', '*.txt', '*.map'
 
         foreach ($Mask in $FileMasks) {
 
@@ -204,7 +204,7 @@ Function ActionHandler {
 
         if ($State -eq 'Unlink') {
 
-            $Files = $Session.EnumerateRemoteFiles("/$((Get-Culture).TextInfo.ToLower($Switch))", '*', [WinSCP.EnumerationOptions]::None)
+            $Files = $Session.EnumerateRemoteFiles("/$((Get-Culture).TextInfo.ToLower($Switch))", '*', [WinSCP.EnumerationOptions]::MatchDirectories)
 
             foreach ($File in $Files) {
 
@@ -221,7 +221,7 @@ Function ActionHandler {
 
         if ($State -eq 'Link') {
 
-            $Files = $Session.EnumerateRemoteFiles("/$((Get-Culture).TextInfo.ToLower($Switch))", '*', [WinSCP.EnumerationOptions]::None)
+            $Files = $Session.EnumerateRemoteFiles("/$((Get-Culture).TextInfo.ToLower($Switch))", '*', [WinSCP.EnumerationOptions]::MatchDirectories)
 
             foreach ($File in $Files) {
 

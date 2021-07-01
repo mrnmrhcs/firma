@@ -1,4 +1,4 @@
-Function GetEnvConfig {
+function GetEnvConfig {
 
     $localEnvFile = ".env"
     $conf = New-Object -TypeName psobject
