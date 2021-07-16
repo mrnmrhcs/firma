@@ -1,4 +1,4 @@
-<div class="snippet" is="layout-home">
+<div class="snippet layout-home">
   <section class="home-layout">
     <main class="home-layout__main">
       <div class="artwork">

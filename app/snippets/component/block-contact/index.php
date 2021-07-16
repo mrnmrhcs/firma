@@ -1,4 +1,4 @@
-<div class="snippet" is="block-contact">
+<block-contact class="snippet">
   <div class="container">
     <div class="columns context-content">
       <div class="column">
@@ -19,4 +19,4 @@
       </div>
     </div>
   </div>
-</div>
+</block-contact>

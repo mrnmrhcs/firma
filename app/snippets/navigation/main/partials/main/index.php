@@ -1,4 +1,4 @@
-<ul class="list list--main">
+<ul class="list list_main">
   <?php foreach ($pages->listed()->without('home') as $item): ?>
   <li class="list__item <?= r($item->isOpen(), ' is-active') ?>">
     <a class="link" href="<?= $item->url() ?>"><?= $item->title()->html() ?></a>

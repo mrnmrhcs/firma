@@ -1,8 +1,8 @@
-[is='block-page-footer'] {
+block-page-footer.snippet {
   display: block;
 
   .container {
-    [is='layout-page'] & {
+    .layout-page & {
       margin: 0 auto;
       max-width: $global-container-width-l;
       padding: 0 $global-container-padding-s;
@@ -17,7 +17,7 @@
       }
     }
 
-    .company [is='layout-page'] & {
+    .company .layout-page & {
       max-width: $global-container-width-m;
     }
   }

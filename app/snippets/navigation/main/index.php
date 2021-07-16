@@ -1,4 +1,4 @@
-<div class="snippet" is="navigation-main">
+<navigation-main class="snippet">
   <div class="navigation-main">
     <a class="navigation-main__brand" href="<?= $site->url() ?>"><?= $site->title() ?></a>
     <button class="navigation-main__trigger" aria-controls="menu" aria-expanded="true" type="button"><?= svg('assets/icons/ico-ui-menu-24x18.svg') ?></button>
@@ -11,4 +11,4 @@
       </div>
     </nav>
   </div>
-</div>
+</navigation-main>

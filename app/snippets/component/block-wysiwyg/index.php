@@ -1,4 +1,4 @@
-<div class="snippet" is="block-wysiwyg">
+<block-wysiwyg class="snippet">
   <div class="container">
     <div class="block-wysiwyg">
       <div class="content context-content">
@@ -6,4 +6,4 @@
       </div>
     </div>
   </div>
-</div>
+</block-wysiwyg>

@@ -1,8 +1,8 @@
 <?php ?>
-<div class="snippet" is="block-page-footer">
+<block-page-footer class="snippet">
   <div class="container">
     <div class="block-page-footer">
 
     </div>
   </div>
-</div>
+</block-page-footer>
