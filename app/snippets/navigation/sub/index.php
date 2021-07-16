@@ -5,7 +5,7 @@ if ($root = $pages->findOpen()) {
 }
 
 if ($items and $items->count()) : ?>
-<div class="snippet" is="navigation-sub">
+<navigation-sub class="snippet">
   <div class="container">
     <div class="navigation-sub">
       <nav class="menu">
@@ -13,5 +13,5 @@ if ($items and $items->count()) : ?>
       </nav>
     </div>
   </div>
-</div>
+</navigation-sub>
 <?php endif ?>

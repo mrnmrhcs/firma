@@ -1,4 +1,4 @@
-<div class="snippet" is="block-map">
+<block-map class="snippet">
   <?php
     echo '<script class="jsData" type="application/json">';
     $data = $page->location_data()->yaml();
@@ -9,4 +9,4 @@
   <div class="container">
     <div id="map"></div>
   </div>
-</div>
+</block-map>

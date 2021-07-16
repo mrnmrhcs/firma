@@ -1,4 +1,4 @@
-<div class="snippet" is="layout-contact">
+<div class="snippet layout-contact">
   <section class="contact-layout">
     <header class="contact-layout__header">
       <?php snippet('component/block-page-header/index') ?>

@@ -1,6 +1,6 @@
 const Headroom = window.Headroom
 
-class NavigationMain extends window.HTMLDivElement {
+class NavigationMain extends window.HTMLElement {
   constructor (...args) {
     const self = super(...args)
     self.init()
@@ -61,12 +61,12 @@ class NavigationMain extends window.HTMLDivElement {
     if (action === 'open') {
       this.$trigger.attr('aria-expanded', 'true')
       this.$menu.attr('aria-hidden', 'false')
-      this.$html.addClass('app--menu')
+      this.$html.addClass('app_menu')
     }
     if (action === 'close') {
       this.$trigger.attr('aria-expanded', 'false')
       this.$menu.attr('aria-hidden', 'true')
-      this.$html.removeClass('app--menu')
+      this.$html.removeClass('app_menu')
     }
   }
 
@@ -86,4 +86,4 @@ class NavigationMain extends window.HTMLDivElement {
   }
 }
 
-window.customElements.define('navigation-main', NavigationMain, { extends: 'div' })
+window.customElements.define('navigation-main', NavigationMain)

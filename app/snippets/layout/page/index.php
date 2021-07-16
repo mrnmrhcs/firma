@@ -1,4 +1,4 @@
-<div class="snippet" is="layout-page">
+<div class="snippet layout-page">
   <section class="page-layout">
     <header class="page-layout__header">
       <?php snippet('component/block-page-header/index') ?>

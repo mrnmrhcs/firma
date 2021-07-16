@@ -47,7 +47,7 @@ button {
     width: 48px;
   }
 
-  &--external {
+  &_external {
     // &::after {
     //   background-image: url('data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="31.408" height="33.919" viewBox="0 0 31.408 33.919"><g transform="translate(-1008.919 -965.628)"><g transform="translate(1046.174 2398.574) rotate(-135)"><path d="M0,0,7.879,7.879,0,15.759" transform="translate(1025.259 990.17) rotate(90)" fill="none" stroke="%23fff" stroke-width="3"/><line y2="16.032" transform="translate(1017.516 980.5)" fill="none" stroke="%23fff" stroke-width="3"/></g><path d="M10683.643,5322.808v10.24h-20.386v-21.215h7.446" transform="translate(-9652.838 -4335)" fill="none" stroke="%23fff" stroke-width="3"/></g></svg>');
     // }
@@ -79,7 +79,7 @@ button {
     }
   }
 
-  &--solid {
+  &_solid {
     background-color: $c-btn-link;
     border-color: $c-btn-link;
 
@@ -95,7 +95,7 @@ button {
     }
   }
 
-  &--outline {
+  &_outline {
     background-color: rgba($c-white, 0);
     border-color: $c-white;
 
@@ -111,13 +111,13 @@ button {
     }
   }
 
-  &-isActive {
+  &_is_active {
     background-color: $c-btn-hover;
     border-color: $c-btn-hover;
     color: $c-hover;
   }
 
-  &--pill {
+  &_pill {
     border-radius: 10rem;
     padding-left: 1.625rem;
     padding-right: 1.625rem;

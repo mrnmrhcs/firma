@@ -1,7 +1,7 @@
 const map = []
 const geo = []
 
-class BlockMap extends window.HTMLDivElement {
+class BlockMap extends window.HTMLElement {
   constructor () {
     super()
     this.$ = $(this)
@@ -12,7 +12,7 @@ class BlockMap extends window.HTMLDivElement {
   }
 }
 
-window.customElements.define('block-map', BlockMap, { extends: 'div' })
+window.customElements.define('block-map', BlockMap)
 
 function initMap () {
   map[0] = new google.maps.Map(document.getElementById('map'), {

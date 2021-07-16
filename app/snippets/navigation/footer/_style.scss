@@ -1,4 +1,4 @@
-[is='navigation-footer'] {
+navigation-footer.snippet {
   display: none;
 
   @media (min-width: $breakpoint-m) {
@@ -34,7 +34,7 @@
     }
 
     .menu {
-      &-lang {
+      &__lang {
         @import 'partials/lang/style';
       }
     }

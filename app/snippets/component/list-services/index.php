@@ -1,4 +1,4 @@
-<div class="snippet" is="list-services">
+<list-services class="snippet">
   <div class="container">
     <div class="list-services">
       <div class="content context-content">
@@ -13,4 +13,4 @@
       </div>
     </div>
   </div>
-</div>
+</list-services>

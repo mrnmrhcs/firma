@@ -1,4 +1,4 @@
-<div class="snippet" is="block-page-header">
+<block-page-header class="snippet">
   <div class="container">
     <header class="block-page-header">
       <div class="content context-content">
@@ -6,4 +6,4 @@
       </div>
     </header>
   </div>
-</div>
+</block-page-header>

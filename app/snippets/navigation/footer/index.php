@@ -1,10 +1,10 @@
-<div class="snippet" is="navigation-footer">
+<navigation-footer class="snippet">
   <div class="container">
     <nav class="navigation">
       <div class="navigation-columns">
         <div class="column">
           <div class="menu">
-            <div class="menu-lang">
+            <div class="menu__lang">
               <?php snippet('navigation/footer/partials/lang/index', ['kirby' => $kirby, 'page' => $page]) ?>
             </div>
           </div>
@@ -17,4 +17,4 @@
       </div>
     </nav>
   </div>
-</div>
+</navigation-footer>
