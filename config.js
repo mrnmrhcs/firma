@@ -1,4 +1,4 @@
-module.exports = {
+export const config = {
   host: {
     local: 'http://firma.local.run:8080',
     live: 'https://www.schramm-reinigung.de'
@@ -39,6 +39,5 @@ module.exports = {
       'node_modules/headroom.js/dist/headroom.js',
       'node_modules/jquery/dist/jquery.js'
     ]
-  },
-  plugins: []
+  }
 }
