@@ -337,9 +337,9 @@ const process__images = () => {
   return src(config.path.src + config.path.resources + config.path.assets + config.path.images + '**/*.{png,jpg,jpeg,gif}')
     .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## IMAGES:' })))
     .pipe(cache(imagemin([
-      imagemin.gifsicle({ interlaced: true }),
-      imagemin.mozjpeg({ quality: 75, progressive: true }),
-      imagemin.optipng({ optimizationLevel: 7 })
+      gifsicle({ interlaced: true }),
+      mozjpeg({ quality: 75, progressive: true }),
+      optipng({ optimizationLevel: 7 })
     ])))
     .pipe(dest(config.path.dist + config.path.public + config.path.assets + config.path.images))
 }
@@ -348,7 +348,7 @@ const process__icons = () => {
   return src(config.path.src + config.path.resources + config.path.assets + config.path.icons + '**/*.svg')
     .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## ICONS:' })))
     .pipe(cache(imagemin([
-      imagemin.svgo({
+      svgo({
         plugins: [
           { removeTitle: true },
           { removeViewBox: false },
