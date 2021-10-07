@@ -2,56 +2,49 @@
 // GULP
 ////////////////////////////////////////////////////////////////////////////////
 
-const { task, series, parallel, src, dest, watch } = require('gulp')
+import gulp from 'gulp'
 
-const autoprefixer = require('gulp-autoprefixer')
-const debug = require('gulp-debug')
-const gulpif = require('gulp-if')
-const concat = require('gulp-concat')
-const rename = require('gulp-rename')
-const terser = require('gulp-terser')
-const imagemin = require('gulp-imagemin')
-const favicon = require('favicons').stream
-const cache = require('gulp-cache')
-const scss = require('gulp-sass')(require('sass'))
-const sync = require('browser-sync')
-const del = require('del')
-const Parcel = require('parcel-bundler')
+import autoprefixer from 'gulp-autoprefixer'
+import cache from 'gulp-cache'
+import debug from 'gulp-debug'
+import concat from 'gulp-concat'
+import terser from 'gulp-terser'
+import rename from 'gulp-rename'
+import gulpif from 'gulp-if'
+import gs from 'gulp-sass'
+import ss from 'sass'
+import bs from 'browser-sync'
+import del from 'del'
+import favicon from 'favicons'
+import imagemin, { gifsicle, mozjpeg, optipng, svgo } from 'gulp-imagemin'
+import { config } from './config.js'
 
-const config = require('./config')
-
-////////////////////////////////////////////////////////////////////////////////
-// INFO
-////////////////////////////////////////////////////////////////////////////////
-
-const STATE_PLUGINS = (typeof config.plugins !== 'undefined' && config.plugins.length > 0) ? true : false
+const { task, series, parallel, src, dest, watch } = gulp
 
 ////////////////////////////////////////////////////////////////////////////////
 // BROWSERSYNC
 ////////////////////////////////////////////////////////////////////////////////
 
-const browser = sync.create()
+const instance = bs.create()
 
-function browsersync (done) {
-  browser.init({
-    host: config.host.local,
-    proxy: config.host.local,
-    logLevel: process.env.DEBUG === 'True' ? 'debug' : 'info',
-    logFileChanges: process.env.DEBUG === 'True' ? true : false,
-    logPrefix: process.env.npm_package_name,
-    ghostMode: false,
-    open: false,
-    notify: false,
-    ui: false,
-    online: false,
-    injectChanges: true,
-    reloadDelay: 800
-  })
-  done()
-}
+const server = () => instance.init({
+  host: config.host.local,
+  proxy: config.host.local,
+  logPrefix: process.env.npm_package_name,
+  logLevel: process.env.DEBUG === 'True' ? 'debug' : 'info',
+  logConnections: process.env.DEBUG === 'True' ? true : false,
+  logFileChanges: process.env.DEBUG === 'True' ? true : false,
+  notify: false,
+  ghostMode: false,
+  reloadDelay: 320,
+  injectChanges: false,
+  online: false,
+  open: true,
+  ui: false
+})
 
-function reload (done) {
-  browser.reload()
+const reload = (done) => {
+  instance.reload()
   done()
 }
 
@@ -61,11 +54,11 @@ function reload (done) {
 
 // CLEAN -------------------------------------------------------------
 
-function clean__content () { return del(config.path.root_dist + config.path.content) }
+const clean__content = () => del(config.path.root_dist + config.path.content)
 
 // COPY  -------------------------------------------------------------
 
-function copy__content () {
+const copy__content = () => {
   return src(config.path.db + '**/*')
     .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## CONTENT:' })))
     .pipe(dest(config.path.dist + config.path.content))
@@ -73,7 +66,7 @@ function copy__content () {
 
 // WATCH -------------------------------------------------------------
 
-function watch__content () {
+const watch__content = () => {
   watch(config.path.db + '**/*', series(content, reload))
 }
 
@@ -87,15 +80,15 @@ const content = series(clean__content, copy__content)
 
 // CLEAN -------------------------------------------------------------
 
-function clean__vendor () { return del(config.vendor.dest + 'vendor.js') }
+const clean__vendor = () => del(config.vendor.dest + 'vendor.js')
 
 // PROCESS -------------------------------------------------------------
 
-function process__vendor () {
+const process__vendor = () => {
   return src(config.vendor.src)
     .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## VENDOR:' })))
     .pipe(concat('vendor.js'))
-    .pipe(gulpif(!process.env.NODE_ENV === 'development', terser()))
+    .pipe(gulpif((process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging'), terser()))
     .pipe(dest(config.vendor.dest))
 }
 
@@ -109,12 +102,12 @@ const vendor = series(clean__vendor, process__vendor)
 
 // CLEAN -------------------------------------------------------------
 
-function clean__scripts__main () { return del(config.path.dist + config.path.scripts + '{main,main-legacy}.{js,js.map}') }
-function clean__scripts__panel () { return del(config.path.dist + config.path.scripts + 'panel.{js,js.map}') }
+const clean__scripts__main = () => del(config.path.dist + config.path.scripts + '{main,main-legacy}.{js,js.map}')
+const clean__scripts__panel = () => del(config.path.dist + config.path.scripts + 'panel.{js,js.map}')
 
 // PROCESS -------------------------------------------------------------
 
-function process__scripts__main () {
+const process__scripts__main = () => {
   return src([config.path.src + config.path.resources + 'main.js', config.path.src + config.path.snippets + '**/script.js'], { sourcemaps: true })
     .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## MAIN:' })))
     .pipe(concat('main.js'))
@@ -122,7 +115,7 @@ function process__scripts__main () {
     .pipe(dest(config.path.dist + config.path.scripts, { sourcemaps: process.env.NODE_ENV === 'development' ? true : '.' }))
 }
 
-function process__scripts__panel () {
+const process__scripts__panel = () => {
   return src(config.path.src + config.path.resources + 'panel.js', { sourcemaps: true })
     .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## MAIN:' })))
     .pipe(concat('panel.js'))
@@ -132,7 +125,7 @@ function process__scripts__panel () {
 
 // WATCH -------------------------------------------------------------
 
-function watch__scripts () {
+const watch__scripts = () => {
   watch([config.path.src + config.path.resources + 'main.js', config.path.src + config.path.snippets + '**/script.js'], series(scripts__main, reload))
   watch(config.path.src + config.path.resources + 'panel.js', series(scripts__panel, reload))
 }
@@ -148,11 +141,12 @@ const scripts__panel = series(clean__scripts__panel, process__scripts__panel)
 
 // CLEAN -------------------------------------------------------------
 
-function clean__styles () { return del(config.path.dist + config.path.styles + '*.{css,css.map}') }
+const clean__styles = () => del(config.path.dist + config.path.styles + '*.{css,css.map}')
 
 // PROCESS -------------------------------------------------------------
 
-function process__styles () {
+const process__styles = () => {
+  const scss = gs(ss)
   return src(config.path.src + config.path.resources + '{main,panel}.scss', { sourcemaps: true })
     .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## STYLE:' })))
     .pipe(scss({ outputStyle: !process.env.NODE_ENV === 'development' ? 'compressed' : 'expanded' }).on('error', scss.logError))
@@ -161,7 +155,7 @@ function process__styles () {
 
 // WATCH -------------------------------------------------------------
 
-function watch__styles () {
+const watch__styles = () => {
   watch(config.path.src + config.path.snippets + '**/*.scss', series(styles, reload))
   watch(config.path.src + config.path.resources + '**/*.scss', series(styles, reload))
 }
@@ -176,11 +170,11 @@ const styles = series(clean__styles, process__styles)
 
 // CLEAN -------------------------------------------------------------
 
-function clean__robots () { return del(config.path.dist + config.path.public + 'robots.txt') }
+const clean__robots = () => del(config.path.dist + config.path.public + 'robots.txt')
 
 // COPY -------------------------------------------------------------
 
-function copy__robots () {
+const copy__robots = () => {
   return src(config.path.src + config.path.configs + `robots.${process.env.NODE_ENV}`)
     .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## ROBOTS:' })))
     .pipe(rename('robots.txt'))
@@ -197,96 +191,96 @@ const robots = series(clean__robots, copy__robots)
 
 // CLEAN -------------------------------------------------------------
 
-function clean__dotenv () { return del(config.path.dist + '.env') }
-function clean__application () { return del(config.path.dist + config.path.env + 'application.php') }
-function clean__enviroments () { return del(config.path.dist + config.path.env + config.path.enviroments) }
-function clean__license () { return del(config.path.dist + config.path.site + config.path.configs + '.license') }
-function clean__config () { return del(config.path.dist + config.path.site + config.path.configs + 'config.php') }
-function clean__languages () { return del(config.path.dist + config.path.site + config.path.languages) }
-function clean__blueprints () { return del(config.path.dist + config.path.site + config.path.blueprints) }
-function clean__collections () { return del(config.path.dist + config.path.site + config.path.collections) }
-function clean__controllers () { return del(config.path.dist + config.path.site + config.path.controllers) }
-function clean__snippets () { return del(config.path.dist + config.path.site + config.path.snippets) }
-function clean__templates () { return del(config.path.dist + config.path.site + config.path.templates) }
-function clean__htaccess () { return del(config.path.dist + config.path.public + '.htaccess') }
-function clean__index () { return del(config.path.dist + config.path.public + 'index.php') }
+const clean__dotenv = () => del(config.path.dist + '.env')
+const clean__application = () => del(config.path.dist + config.path.env + 'application.php')
+const clean__enviroments = () => del(config.path.dist + config.path.env + config.path.enviroments)
+const clean__license = () => del(config.path.dist + config.path.site + config.path.configs + '.license')
+const clean__config = () => del(config.path.dist + config.path.site + config.path.configs + 'config.php')
+const clean__languages = () => del(config.path.dist + config.path.site + config.path.languages)
+const clean__blueprints = () => del(config.path.dist + config.path.site + config.path.blueprints)
+const clean__collections = () => del(config.path.dist + config.path.site + config.path.collections)
+const clean__controllers = () => del(config.path.dist + config.path.site + config.path.controllers)
+const clean__snippets = () => del(config.path.dist + config.path.site + config.path.snippets)
+const clean__templates = () => del(config.path.dist + config.path.site + config.path.templates)
+const clean__htaccess = () => del(config.path.dist + config.path.public + '.htaccess')
+const clean__index = () => del(config.path.dist + config.path.public + 'index.php')
 
 // COPY -------------------------------------------------------------
 
-function copy__dotenv () {
+const copy__dotenv = () => {
   return src(config.path.root + '.env')
     .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## DOTENV:' })))
     .pipe(dest(config.path.dist))
 }
 
-function copy__license () {
+const copy__license = () => {
   return src(config.path.secure + config.path.license + `.license.${process.env.NODE_ENV}`)
     .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## LICENSE:' })))
     .pipe(rename('.license'))
     .pipe(dest(config.path.dist + config.path.site + config.path.configs))
 }
 
-function copy__enviroments () {
+const copy__enviroments = () => {
   return src(config.path.root + config.path.env + config.path.enviroments + `${process.env.NODE_ENV}.php`)
     .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## ENVIROMENTS:' })))
     .pipe(dest(config.path.dist + config.path.env + config.path.enviroments))
 }
 
-function copy__application () {
+const copy__application = () => {
   return src(config.path.root + config.path.env + 'application.php')
     .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## APPLICATION:' })))
     .pipe(dest(config.path.dist + config.path.env))
 }
 
-function copy__config () {
+const copy__config = () => {
   return src(config.path.src + config.path.configs + 'config.php')
     .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## CONFIG:' })))
     .pipe(dest(config.path.dist + config.path.site + config.path.configs))
 }
 
-function copy__languages () {
+const copy__languages = () => {
   return src(config.path.src + config.path.languages + '**/*.php')
     .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## LANGUAGES:' })))
     .pipe(dest(config.path.dist + config.path.site + config.path.languages))
 }
 
-function copy__blueprints () {
+const copy__blueprints = () => {
   return src(config.path.src + config.path.blueprints + '**/*.yml')
     .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## BLUEPRINTS:' })))
     .pipe(dest(config.path.dist + config.path.site + config.path.blueprints))
 }
 
-function copy__collections () {
+const copy__collections = () => {
   return src(config.path.src + config.path.collections + '**/*')
     .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## COLLECTIONS:' })))
     .pipe(dest(config.path.dist + config.path.site + config.path.collections))
 }
 
-function copy__controllers () {
+const copy__controllers = () => {
   return src(config.path.src + config.path.controllers + '**/*')
     .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## CONTROLLERS:' })))
     .pipe(dest(config.path.dist + config.path.site + config.path.controllers))
 }
 
-function copy__snippets () {
+const copy__snippets = () => {
   return src(config.path.src + config.path.snippets + '**/*.php')
     .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## SNIPPETS:' })))
     .pipe(dest(config.path.dist + config.path.site + config.path.snippets))
 }
 
-function copy__templates () {
+const copy__templates = () => {
   return src(config.path.src + config.path.templates + '**/*.php')
     .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## TEMPLATES:' })))
     .pipe(dest(config.path.dist + config.path.site + config.path.templates))
 }
 
-function copy__htaccess () {
+const copy__htaccess = () => {
   return src(config.path.src + '.htaccess')
     .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## HTACCESS:' })))
     .pipe(dest(config.path.dist + config.path.public))
 }
 
-function copy__index () {
+const copy__index = () => {
   return src(config.path.src + 'index.php')
     .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## INDEX:' })))
     .pipe(dest(config.path.dist + config.path.public))
@@ -294,7 +288,7 @@ function copy__index () {
 
 // WATCH -------------------------------------------------------------
 
-function watch__logic () {
+const watch__logic = () => {
   watch(config.path.root + '.env', series(dotenv, reload))
   watch(config.path.root + config.path.env + 'application.php', series(application, reload))
   watch(config.path.root + config.path.env + config.path.enviroments + '*.php', series(enviroments, reload))
@@ -332,29 +326,29 @@ const index = series(clean__index, copy__index)
 
 // CLEAN -------------------------------------------------------------
 
-function clean__images () { return del(config.path.dist + config.path.public + config.path.assets + config.path.images) }
-function clean__icons () { return del(config.path.dist + config.path.public + config.path.assets + config.path.icons) }
-function clean__favicons () { return del(config.path.dist + config.path.public + config.path.assets + config.path.favicons) }
-function clean__fonts () { return del(config.path.dist + config.path.public + config.path.assets + config.path.fonts) }
+const clean__images = () => del(config.path.dist + config.path.public + config.path.assets + config.path.images)
+const clean__icons = () => del(config.path.dist + config.path.public + config.path.assets + config.path.icons)
+const clean__favicons = () => del(config.path.dist + config.path.public + config.path.assets + config.path.favicons)
+const clean__fonts = () => del(config.path.dist + config.path.public + config.path.assets + config.path.fonts)
 
 // PROCESS -------------------------------------------------------------
 
-function process__images () {
+const process__images = () => {
   return src(config.path.src + config.path.resources + config.path.assets + config.path.images + '**/*.{png,jpg,jpeg,gif}')
     .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## IMAGES:' })))
     .pipe(cache(imagemin([
-      imagemin.gifsicle({ interlaced: true }),
-      imagemin.mozjpeg({ quality: 75, progressive: true }),
-      imagemin.optipng({ optimizationLevel: 7 })
+      gifsicle({ interlaced: true }),
+      mozjpeg({ quality: 75, progressive: true }),
+      optipng({ optimizationLevel: 7 })
     ])))
     .pipe(dest(config.path.dist + config.path.public + config.path.assets + config.path.images))
 }
 
-function process__icons () {
+const process__icons = () => {
   return src(config.path.src + config.path.resources + config.path.assets + config.path.icons + '**/*.svg')
     .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## ICONS:' })))
     .pipe(cache(imagemin([
-      imagemin.svgo({
+      svgo({
         plugins: [
           { removeTitle: true },
           { removeViewBox: false },
@@ -367,10 +361,10 @@ function process__icons () {
     .pipe(dest(config.path.dist + config.path.public + config.path.assets + config.path.icons))
 }
 
-function process__favicons () {
+const process__favicons = () => {
   return src(config.path.src + config.path.resources + config.path.assets + config.path.favicons + 'favicon_src.png')
     .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## FAVICON:' })))
-    .pipe(favicon({
+    .pipe(favicon.stream({
       path: '/' + config.path.assets + config.path.favicons,
       appName: 'Glas & Gebäudereinigung - Uwe Schramm',
       appShortName: 'Schramm Reinigung',
@@ -406,7 +400,7 @@ function process__favicons () {
     .pipe(dest(config.path.dist + config.path.public + config.path.assets + config.path.favicons))
 }
 
-function copy__fonts () {
+const copy__fonts = () => {
   return src(config.path.src + config.path.resources + config.path.assets + config.path.fonts + '**/*.{woff,woff2}')
     .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## FONTS:' })))
     .pipe(dest(config.path.dist + config.path.public + config.path.assets + config.path.fonts))
@@ -414,7 +408,7 @@ function copy__fonts () {
 
 // WATCH -------------------------------------------------------------
 
-function watch__assets () {
+const watch__assets = () => {
   watch(config.path.src + config.path.resources + config.path.assets + config.path.fonts + '**/*.{woff,woff2}', series(fonts, reload))
   watch(config.path.src + config.path.resources + config.path.assets + config.path.images + '**/*.{png,jpg,jpeg,gif}', series(images, reload))
   watch(config.path.src + config.path.resources + config.path.assets + config.path.icons + '**/*.svg', series(icons, reload))
@@ -429,93 +423,18 @@ const icons = series(clean__icons, process__icons)
 const favicons = series(clean__favicons, process__favicons)
 
 ////////////////////////////////////////////////////////////////////////////////
-// PLUGINS
-////////////////////////////////////////////////////////////////////////////////
-
-// CLEAN -------------------------------------------------------------
-
-function clean__plugins (done) {
-  const tasks = config.plugins.map((plugin) => {
-    function clean__plugin () {
-      return del(config.path.dist + config.path.site + config.path.plugins + plugin)
-    }
-    clean__plugin.displayName = `clean__${plugin}`
-    return clean__plugin
-  })
-  return series(...tasks, function clean__series (seriesDone) {
-    seriesDone()
-    done()
-  })()
-}
-
-// PROCESS - PHP -------------------------------------------------------------
-
-function process__plugins_php () {
-  return src(config.path.src + config.path.plugins + '**/*.php')
-    .pipe(gulpif(process.env.DEBUG === 'True', debug({ title: '## PLUGIN PHP:' })))
-    .pipe(dest(config.path.dist + config.path.site + config.path.plugins))
-}
-
-// PROCESS - VUE -------------------------------------------------------------
-
-function process__plugins_vue (done) {
-  const tasks = config.plugins.map((plugin) => {
-    function process__plugin_vue () {
-      const entry = config.path.src + config.path.plugins + `${plugin}/src/index.js`
-      const options = {
-        outDir: config.path.dist + config.path.site + config.path.plugins + plugin,
-        outFile: 'index.js',
-        watch: false,
-        minify: !process.env.NODE_ENV === 'development' ? true : false,
-        sourceMaps: process.env.NODE_ENV === 'development' ? true : false,
-        cache: false,
-        contentHash: false,
-        autoInstall: false,
-        scopeHoist: true,
-        logLevel: process.env.DEBUG === 'True' ? 3 : 0,
-        target: 'node'
-      }
-      const bundler = new Parcel(entry, options)
-      return bundler.bundle()
-    }
-    process__plugin_vue.displayName = `process__${plugin}`
-    return process__plugin_vue
-  })
-  return series(...tasks, function process__series (seriesDone) {
-    seriesDone()
-    done()
-  })()
-}
-
-// WATCH -------------------------------------------------------------
-
-function watch__plugins () {
-  watch(config.path.src + config.path.plugins + '**/*.*', series(plugins, reload))
-}
-
-// COMPOSITION -------------------------------------------------------------
-
-const plugins = series(clean__plugins, process__plugins_php, process__plugins_vue)
-
-////////////////////////////////////////////////////////////////////////////////
 // COMPOSITION
 ////////////////////////////////////////////////////////////////////////////////
 
+const WATCH = series(server, parallel(watch__logic, watch__assets, watch__styles, watch__scripts, watch__content))
 const DATA = series(content)
 const LOGIC = parallel(dotenv, application, enviroments, htaccess, configs, languages, blueprints, collections, controllers, snippets, templates, license, index, vendor)
 const STYLE = parallel(styles, scripts__main, scripts__panel)
 const ASSET = series(fonts, images, icons, favicons)
-const PLUGIN = series(plugins)
 const SEO = series(robots)
-const RUN = STATE_PLUGINS ? series(browsersync, parallel(watch__logic, watch__assets, watch__styles, watch__scripts, watch__plugins, watch__content)) : series(browsersync, parallel(watch__logic, watch__assets, watch__styles, watch__scripts, watch__content))
+const RUN = series(DATA, LOGIC, STYLE, ASSET, process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging' ? SEO : WATCH)
 
-// MAIN -------------------------------------------------------------
-
-if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging') {
-  exports.default = STATE_PLUGINS ? series(DATA, LOGIC, STYLE, ASSET, SEO, PLUGIN) : series(DATA, LOGIC, STYLE, ASSET, SEO)
-} else {
-  exports.default = STATE_PLUGINS ? series(DATA, LOGIC, STYLE, ASSET, PLUGIN, RUN) : series(DATA, LOGIC, STYLE, ASSET, RUN)
-}
+export default RUN
 
 ////////////////////////////////////////////////////////////////////////////////
 // HELPER
